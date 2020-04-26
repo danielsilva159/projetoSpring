@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+ <!--Import Google Icon Font-->
+ <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+ <!--Import materialize.css-->
+ <link type="text/css" rel="stylesheet" href="/materialize/css/materialize.min.css"  media="screen,projection"/>
+<link type="text/css" rel="stylesheet" href="/materialize/css/materialize.css"  media="screen,projection"/>
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+	<h3>Spring Boot + Thymeleaf + Material Design Lite</h3><br />
+	<h5>Cadastro de Pessoa</h5>
+	<a href="/cadastropessoa" class="waves-effect waves-light btn">pessoa</a>
+	<div th:each="p: ${pessoabj}">
+		<div class="row">
+			<p>ID: <span th:text="${p.id}"></span></p>
+			<p>Nome: <span th:text="${p.nome}"></span></p>
+			<p>Sobrenome: <span th:text="${p.sobrenome}"></span></p>
+		</div>
+		
+	</div>
+	<div class="row">
+		<form th:action="@{/addfonePessoa/{pessoaid}(pessoaid=${pessoabj.id})}" method="post" class="col 12" 
+		onsubmit="return validarCampo()? true : false">
+			<div class="row">
+				<div class="input-field col s6">
+					<label class="active" for="numero">Número</label>
+					<input type="text" id="numero" name="numero" class="validate" />
+				</div>
+				<div class="input-field col s6">
+					<label class="active" for="tipo">Tipo</label>
+					<input type="text" id="tipo" name="tipo" class="validate" />
+				</div>
+				<input type="submit" value="Adicionar" class="waves-effect waves-light btn" />
+			</div>
+		</form>
+	</div>
+	<p>Telefone da(o) <span th:text="${pessoabj.nome}"></span></p>
+	<table>
+		<tr th:each="fone : ${telefones}">
+			<td th:text="${fone.numero}"></td>
+			<td th:text="${fone.tipo}"></td>
+			<td><a th:href="@{/removertelefone/{idtelefone}(idtelefone=${fone.id})}">Excluir</a></td>
+		</tr>
+	</table>
+	<script type="text/javascript" src="/materialize/js/materialize.js"></script>
+	<script type="text/javascript" src="/materialize/js/materialize.min.js"></script>
+	<script type="text/javascript">
+		function validarCampo(){
+			numero = document.getElementById('numero').value;
+			tipo = document.getElementById('tipo').value;
+			if(numero === ''){
+				alert('Numero deve ser informado');
+				return false;
+			}else if(tipo === ''){
+				alert('Tipo deve ser informado');
+				return false;
+			}
+		}
+	</script>
+</body>
+</html>

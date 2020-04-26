@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+ <!--Import Google Icon Font-->
+ <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+ <!--Import materialize.css-->
+ <link type="text/css" rel="stylesheet" href="/materialize/css/materialize.min.css"  media="screen,projection"/>
+<link type="text/css" rel="stylesheet" href="/materialize/css/materialize.css"  media="screen,projection"/>
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+	<h3>Spring Boot + Thymeleaf + Material Design Lite</h3><br />
+	<h5>Cadastro de Pessoa</h5>
+	<div class="row">
+	<br />
+		<div th:each = "m : ${msg}">
+			<span th:text = "${m}"></span>
+		</div>
+	<br />
+	<form action="salvarpessoa" method="post" th:object = ${pessoabj} class="col 12" id="formpessoa">
+		<label for="id">ID</label>
+		<input type="hidden" name="id" th:field= "*{id}" id="id"/>
+		<label for="nome">Nome:</label>
+		<input type="text" name="nome" th:field= "*{nome}" id="nome" >
+		<label>Sobrenome:</label>
+		<input type="text" name="sobrenome" th:field= "*{sobrenome}">
+		<input type="submit" value="Salvar" class="waves-effect waves-light btn-small save">
+		<button class="waves-effect waves-light btn" onclick="document.getElementById('formpessoa').reset()">Novo</button>
+	</form>
+	</div>
+	<br />
+	<br />
+	<a href="/listapessoa" class="waves-effect waves-light btn-small ">Lista</a>
+	<br />
+	<br />
+	<form action="pesquisarpessoa" method="post">
+		<label>Pesquisa por nome: </label>
+		<input type="text" name="nomepesquisa">
+		<input type="submit" value="Buscar" class="waves-effect waves-light btn-small">
+	</form>
+	<table>
+		<tr th:each = "pessoa: ${pessoas}">
+			<td th:text = ${pessoa.id}></td>
+			<td><a th:href="@{/telefones/{idpessoa}(idpessoa=${pessoa.id})}"><span th:text= ${pessoa.nome}></span></a></td>
+			<td th:text = ${pessoa.sobrenome}></td>
+			<td><a th:href="@{/editarpessoa/{idpessoa}(idpessoa=${pessoa.id})}">Editar</a></td>
+			<td><a th:href="@{/removerpessoa/{idpessoa}(idpessoa=${pessoa.id})}">Excluir</a></td>
+		</tr>
+	</table>
+	
+	
+	<script type="text/javascript" src="/materialize/js/materialize.js"></script>
+	<script type="text/javascript" src="/materialize/js/materialize.min.js"></script>
+</body>
+</html>
