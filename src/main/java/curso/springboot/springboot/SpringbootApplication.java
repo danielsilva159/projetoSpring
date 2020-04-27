@@ -3,6 +3,7 @@ package curso.springboot.springboot;
 import java.security.MessageDigest;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
@@ -12,26 +13,24 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
 @EntityScan(basePackages = "curso.springboot.model")
-@ComponentScan(basePackages = {"curso.*"})
-@EnableJpaRepositories(basePackages = {"curso.springboot.repository"})
+@ComponentScan(basePackages = { "curso.*" })
+@EnableJpaRepositories(basePackages = { "curso.springboot.repository" })
 @EnableTransactionManagement
+@EnableWebMvc
+@RestController
+@EnableAutoConfiguration
 public class SpringbootApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringbootApplication.class, args);
-		
-		/*PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		String text = "123";
-		String result = "";
-		for(int i = 0; i < 10; i++) {
-			 result = encoder.encode(text).;
-			System.out.println(result);
-		}*/
-		 
-	}
 
+		/*BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		String result = encoder.encode("123");
+		System.out.println(result);*/
+	}
 }
