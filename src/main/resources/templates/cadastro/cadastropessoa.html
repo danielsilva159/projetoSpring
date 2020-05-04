@@ -1,13 +1,17 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
  <!--Import Google Icon Font-->
  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
  <!--Import materialize.css-->
- <link type="text/css" rel="stylesheet" href="/materialize/css/materialize.min.css"  media="screen,projection"/>
-<link type="text/css" rel="stylesheet" href="/materialize/css/materialize.css"  media="screen,projection"/>
+ <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
       <!--Let browser know website is optimized for mobile-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
@@ -20,13 +24,18 @@
 			<span th:text = "${m}"></span>
 		</div>
 	<br />
-	<form action="salvarpessoa" method="post" th:object = ${pessoabj} class="col 12" id="formpessoa">
+	<form action="salvarpessoa" method="post" th:object = ${pessoabj} class="col 12" id="formpessoa" sec:authorize= "hasRole('ROLE_ADMIN')">
 		<label for="id">ID</label>
 		<input type="hidden" name="id" th:field= "*{id}" id="id"/>
 		<label for="nome">Nome:</label>
 		<input type="text" name="nome" th:field= "*{nome}" id="nome" >
 		<label>Sobrenome:</label>
 		<input type="text" name="sobrenome" th:field= "*{sobrenome}">
+		<label for="sexopessoa">Sexo:</label>
+		<select class="browser-default" th:field="*{sexopessoa}">
+			<option value="MASCULINO" th:text="Masculino" />
+			<option value="FEMININO" th:text="Feminino" />
+		</select>
 		<input type="submit" value="Salvar" class="waves-effect waves-light btn-small save">
 		<button class="waves-effect waves-light btn" onclick="document.getElementById('formpessoa').reset()">Novo</button>
 	</form>
@@ -36,11 +45,28 @@
 	<a href="/listapessoa" class="waves-effect waves-light btn-small ">Lista</a>
 	<br />
 	<br />
-	<form action="pesquisarpessoa" method="post">
-		<label>Pesquisa por nome: </label>
-		<input type="text" name="nomepesquisa">
-		<input type="submit" value="Buscar" class="waves-effect waves-light btn-small">
+	<div class="row">
+	<form action="pesquisarpessoa" method="post" class="col s12" id="pesquisarpessoa">
+		<div class="input-field col s6">
+			<label>Pesquisa por nome: </label>
+			<input type="text" name="nomepesquisa">
+		</div>
+		<div class="input-field col s6">
+			<label for="pesqsexo" class="active">Pesquisa Sexo</label>
+			<select class="browser-default" name="pesqsexo" id="pesqsexo">
+			<option value="">Todos</option>
+			<option value="MASCULINO" th:text="Masculino" />
+			<option value="FEMININO" th:text="Feminino" />
+		</select>
+		</div>
+		<div class="input-field col s12">
+			<input type="submit" value="Buscar" class="waves-effect waves-light btn-small">
+		</div>
+		<div class="input-field col s12">
+			<input type="submit" value="PDF" class="waves-effect waves-light btn-small" onclick="document.getElementById('pesquisarpessoa').method = 'get'">
+		</div>
 	</form>
+	</div>
 	<table>
 		<tr th:each = "pessoa: ${pessoas}">
 			<td th:text = ${pessoa.id}></td>
@@ -51,8 +77,5 @@
 		</tr>
 	</table>
 	
-	
-	<script type="text/javascript" src="/materialize/js/materialize.js"></script>
-	<script type="text/javascript" src="/materialize/js/materialize.min.js"></script>
 </body>
 </html>

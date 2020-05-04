@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,11 @@ public class PessoaController {
 	@Autowired
 	private TelefoneRepository telefoneRepository;
 	
+	@Autowired
+	private ReportUtil reportUtil;
+	
+	
+	
 	@RequestMapping(method = RequestMethod.GET, value = "/cadastropessoa")
 	public ModelAndView inicio() {
 		ModelAndView andView = new ModelAndView("cadastro/cadastropessoa");
@@ -43,6 +50,8 @@ public class PessoaController {
 	
 	@PostMapping(value = "**/salvarpessoa")
 	public ModelAndView salvar(@Valid Pessoa pessoa, BindingResult bindingResult) {
+		
+		pessoa.setTelefones(telefoneRepository.getTelefones(pessoa.getId()));
 		
 		if(bindingResult.hasErrors()) {
 			ModelAndView andView = new ModelAndView("cadastro/cadastropessoa");
@@ -93,11 +102,52 @@ public class PessoaController {
 		
 	}
 	@PostMapping("**/pesquisarpessoa")
-	public ModelAndView pesquisar(@RequestParam("nomepesquisa") String nomepesquisa) {
+	public ModelAndView pesquisar(@RequestParam("nomepesquisa") String nomepesquisa, @RequestParam("pesqsexo") String pesqsexo) {
+		
+		List<Pessoa> pessoas = new ArrayList<Pessoa>();
+		if(pesqsexo != null && !pesqsexo.isEmpty()) {
+			pessoas = pessoaRepository.findPessoaBySexo(nomepesquisa, pesqsexo) ;
+		}else {
+			pessoas = pessoaRepository.findPessoaByName(nomepesquisa);
+		}
 		ModelAndView andView = new ModelAndView("cadastro/cadastropessoa");
-		andView.addObject("pessoas", pessoaRepository.findPessoaByName(nomepesquisa));
+		andView.addObject("pessoas", pessoas);
 		andView.addObject("pessoabj", new Pessoa());
 		return andView;
+	}
+	@GetMapping("**/pesquisarpessoa")
+	public void imprimePDF(@RequestParam("nomepesquisa") String nomepesquisa, @RequestParam("pesqsexo") String pesqsexo,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		List<Pessoa> pessoas = new ArrayList<Pessoa>();
+		if(pesqsexo != null && !pesqsexo.isEmpty() && nomepesquisa != null && !nomepesquisa.isEmpty()) {
+			pessoas = pessoaRepository.findPessoaBySexo(nomepesquisa, pesqsexo);
+		}else if(nomepesquisa != null && !nomepesquisa.isEmpty()) {
+			pessoas = pessoaRepository.findPessoaByName(nomepesquisa);
+		}else {
+			Iterable<Pessoa> pessoaIt = pessoaRepository.findAll();
+			for(Pessoa pessoa : pessoaIt) {
+				pessoas.add(pessoa);
+			}
+			
+			//Chamar o serviço que faz a geração do Relatorio
+			byte[] pdf = reportUtil.gerarRelatorio(pessoas, "pessoa", request.getServletContext());
+			
+			//Tamanho da resposta
+			response.setContentLength(pdf.length);
+			
+			//Definir na resposta o tipo do arquivo
+			response.setContentType("application/pctet-stream");
+			
+			//Definir o cabeçalho da resposta
+			String headerKey = "Content-Disposition";
+			String headerValue = String.format("attachment: filename=\"%s\"", "relatorio.pdf");
+			response.setHeader(headerKey, headerValue);
+			
+			//Finalizando a resposta pro navegador
+			response.getOutputStream().write(pdf);
+			
+			
+		}
 	}
 	@GetMapping("/telefones/{idpessoa}")
 	public ModelAndView telefones(@PathVariable("idpessoa") Long idpessoa) {

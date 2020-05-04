@@ -38,6 +38,16 @@ public class Pessoa implements Serializable {
 	@OneToMany(mappedBy = "pessoa",  orphanRemoval = true, cascade = {CascadeType.REMOVE})
 	private List<Telefone> telefones;
 	
+	private String sexopessoa;
+	
+	public void setSexopessoa(String sexopessoa) {
+		this.sexopessoa = sexopessoa;
+	}
+	
+	public String getSexopessoa() {
+		return sexopessoa;
+	}
+	
 	public void setTelefones(List<Telefone> telefones) {
 		this.telefones = telefones;
 	}
